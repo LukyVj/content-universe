@@ -1,5 +1,6 @@
 import { mount } from 'gss-lang';
 import { toGss } from './to-gss.js';
+import { initPanel } from './panel.js';
 
 const API = (import.meta.env.VITE_STRAPI_URL ?? 'http://localhost:1337') + '/api';
 const POLL_MS = 3000;
@@ -47,6 +48,8 @@ async function tick() {
   known = new Set(bodies.map((b) => b.documentId));
   for (const [id, t] of bornAt) if (now - t > BORN_MS) bornAt.delete(id);
 
+  window.dispatchEvent(new CustomEvent('universe:data', { detail: { stars } }));
+
   const planets = stars.reduce((n, s) => n + s.planets.length, 0);
   stats.textContent = `${stars.length} stars · ${planets} planets · ${bodies.length - stars.length - planets} moons · ${constellations.length} constellations`;
 
@@ -57,13 +60,20 @@ async function tick() {
   else scene = mount(canvas, source);
 }
 
+let timer = null;
+
 async function loop() {
+  clearTimeout(timer);
   try {
     await tick();
   } catch (err) {
     stats.textContent = `Strapi unreachable: ${err.message}`;
   }
-  setTimeout(loop, POLL_MS);
+  timer = setTimeout(loop, POLL_MS);
 }
 
+// The panel asks for a refresh right after a create, so the planet pops in at once.
+window.addEventListener('universe:refresh', loop);
+
+initPanel(API);
 loop();

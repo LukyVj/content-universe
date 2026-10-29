@@ -1,0 +1,10 @@
+{
+  "name": "content-universe",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n cms,web -c blue,magenta \"npm --prefix my-strapi-demo run develop\" \"npm --prefix universe-web run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

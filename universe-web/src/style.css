@@ -1,9 +1,238 @@
-html, body { margin: 0; height: 100%; background: #05050f; color: #f5f5ff; font: 13px/1.4 ui-monospace, Menlo, monospace; overflow: hidden; }
-canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
-#hud { position: fixed; top: 16px; left: 16px; display: grid; gap: 4px; pointer-events: none; }
-#hud strong { font-size: 15px; letter-spacing: .08em; text-transform: uppercase; }
-#stats { opacity: .7; }
-#log { position: fixed; bottom: 16px; left: 16px; margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; pointer-events: none; }
-#log li { animation: in .4s cubic-bezier(.3, 1.6, .5, 1) both, out .6s ease-in 5s forwards; }
-@keyframes in { from { transform: translateY(12px) scale(.9); opacity: 0; } }
-@keyframes out { to { opacity: 0; } }
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #05050f;
+  color: #f5f5ff;
+  font:
+    13px/1.4 ui-monospace,
+    Menlo,
+    monospace;
+  overflow: hidden;
+}
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#hud {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  display: grid;
+  gap: 4px;
+  pointer-events: none;
+}
+#hud strong {
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+#stats {
+  opacity: 0.7;
+}
+#log {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+  pointer-events: none;
+}
+#log li {
+  animation:
+    in 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) both,
+    out 0.6s ease-in 5s forwards;
+}
+@keyframes in {
+  from {
+    transform: translateY(12px) scale(0.9);
+    opacity: 0;
+  }
+}
+@keyframes out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Big Bang panel */
+#bigbang-toggle,
+#bigbang button[type="submit"] {
+  font: inherit;
+  color: #fff;
+  cursor: pointer;
+  border: 1px solid #ffffff2e;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #6c69ff, #4945ff);
+  box-shadow:
+    0 0 0 1px #4945ff66,
+    0 8px 30px #4945ff66,
+    inset 0 1px #ffffff55;
+  padding: 10px 18px;
+  transition:
+    transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1),
+    box-shadow 0.2s;
+}
+#bigbang-toggle:hover,
+#bigbang button[type="submit"]:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow:
+    0 0 0 1px #4945ff,
+    0 12px 40px #4945ffaa,
+    inset 0 1px #ffffff77;
+}
+#bigbang-toggle:active,
+#bigbang button[type="submit"]:active {
+  transform: scale(0.96);
+}
+#bigbang-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+}
+
+#bigbang {
+  position: fixed;
+  top: 64px;
+  right: 16px;
+  width: min(300px, calc(100vw - 32px));
+  max-height: calc(100vh - 80px);
+  overflow: auto;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  box-sizing: border-box;
+  background: #12122acc;
+  backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid #ffffff1f;
+  box-shadow:
+    0 30px 80px #000a,
+    inset 0 1px #ffffff1a;
+  animation: panel-in 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+#bigbang[hidden] {
+  display: none;
+}
+#bigbang[aria-busy="true"] {
+  opacity: 0.7;
+  pointer-events: none;
+}
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+}
+
+#bigbang header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+#bigbang header div {
+  display: grid;
+}
+#bigbang small,
+#bigbang .status {
+  opacity: 0.6;
+  margin: 0;
+}
+#bigbang label {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+}
+#bigbang label output {
+  float: right;
+  opacity: 0.7;
+}
+#bigbang .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+#bigbang .check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#bigbang input:not([type]),
+#bigbang select {
+  font: inherit;
+  color: inherit;
+  background: #ffffff0f;
+  border: 1px solid #ffffff22;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+#bigbang input[type="color"] {
+  width: 100%;
+  height: 36px;
+  padding: 0;
+  border: 1px solid #ffffff22;
+  border-radius: 10px;
+  background: none;
+}
+#bigbang input[type="range"] {
+  accent-color: #6c69ff;
+}
+
+.preview {
+  --c: #4945ff;
+  --size: 48px;
+  --shade: none;
+  position: relative;
+  flex: none;
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+}
+.preview::before {
+  content: "";
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background:
+    var(--shade),
+    radial-gradient(
+      circle at 35% 30%,
+      color-mix(in oklch, var(--c), white 45%),
+      var(--c) 45%,
+      color-mix(in oklch, var(--c), black 65%)
+    );
+  box-shadow: 0 0 24px color-mix(in oklch, var(--c), transparent 50%);
+  transition:
+    width 0.35s cubic-bezier(0.3, 1.6, 0.5, 1),
+    height 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+  animation: wobble 3s ease-in-out infinite;
+}
+.preview.has-rings::after {
+  content: "";
+  position: absolute;
+  width: calc(var(--size) * 1.7);
+  height: calc(var(--size) * 0.45);
+  border-radius: 50%;
+  border: 2px solid color-mix(in oklch, var(--c), white 30%);
+  transform: rotate(-14deg);
+  mask: linear-gradient(#000 45%, transparent 45% 62%, #000 62%);
+}
+@keyframes wobble {
+  50% {
+    transform: translateY(-3px) rotate(4deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .preview::before,
+  #bigbang,
+  #log li {
+    animation: none;
+  }
+}
