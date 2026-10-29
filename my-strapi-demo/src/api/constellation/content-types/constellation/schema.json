@@ -1,0 +1,26 @@
+{
+  "kind": "collectionType",
+  "collectionName": "constellations",
+  "info": {
+    "singularName": "constellation",
+    "pluralName": "constellations",
+    "displayName": "constellation"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "stars": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::star.star",
+      "inversedBy": "constellations"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "kind": "singleType",
+  "collectionName": "universes",
+  "info": {
+    "singularName": "universe",
+    "pluralName": "universes",
+    "displayName": "Universe"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "background": {
+      "type": "string",
+      "regex": "^#[0-9a-fA-F]{6}$"
+    },
+    "glow": {
+      "type": "string",
+      "regex": "^#[0-9a-fA-F]{6}$"
+    },
+    "spin": {
+      "type": "decimal"
+    }
+  }
+}

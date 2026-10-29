@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "planets",
+  "info": {
+    "singularName": "planet",
+    "pluralName": "planets",
+    "displayName": "planet"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "color": {
+      "type": "string",
+      "regex": "^#[0-9a-fA-F]{6}$"
+    },
+    "radius": {
+      "type": "decimal"
+    },
+    "material": {
+      "type": "enumeration",
+      "enum": [
+        "rock",
+        "metal",
+        "glass",
+        "jelly",
+        "gold"
+      ]
+    },
+    "orbit": {
+      "type": "decimal"
+    },
+    "speed": {
+      "type": "decimal"
+    },
+    "rings": {
+      "type": "boolean"
+    },
+    "moons": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::moon.moon",
+      "mappedBy": "planet"
+    },
+    "star": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::star.star",
+      "inversedBy": "planets"
+    }
+  }
+}

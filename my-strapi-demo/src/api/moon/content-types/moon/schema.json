@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "moons",
+  "info": {
+    "singularName": "moon",
+    "pluralName": "moons",
+    "displayName": "moon"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string",
+      "regex": "^#[0-9a-fA-F]{6}$"
+    },
+    "radius": {
+      "type": "decimal"
+    },
+    "planet": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::planet.planet",
+      "inversedBy": "moons"
+    }
+  }
+}

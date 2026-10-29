@@ -1,0 +1,9 @@
+html, body { margin: 0; height: 100%; background: #05050f; color: #f5f5ff; font: 13px/1.4 ui-monospace, Menlo, monospace; overflow: hidden; }
+canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+#hud { position: fixed; top: 16px; left: 16px; display: grid; gap: 4px; pointer-events: none; }
+#hud strong { font-size: 15px; letter-spacing: .08em; text-transform: uppercase; }
+#stats { opacity: .7; }
+#log { position: fixed; bottom: 16px; left: 16px; margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; pointer-events: none; }
+#log li { animation: in .4s cubic-bezier(.3, 1.6, .5, 1) both, out .6s ease-in 5s forwards; }
+@keyframes in { from { transform: translateY(12px) scale(.9); opacity: 0; } }
+@keyframes out { to { opacity: 0; } }
