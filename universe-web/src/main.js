@@ -1,6 +1,7 @@
-import { mount } from 'gss-lang';
+import { mount, compile } from 'gss-lang';
 import { toGss } from './to-gss.js';
 import { initPanel } from './panel.js';
+import { initInspector, tagCursors } from './inspector.js';
 
 const API = (import.meta.env.VITE_STRAPI_URL ?? 'http://localhost:1337') + '/api';
 const POLL_MS = 3000;
@@ -53,11 +54,12 @@ async function tick() {
   const planets = stars.reduce((n, s) => n + s.planets.length, 0);
   stats.textContent = `${stars.length} stars · ${planets} planets · ${bodies.length - stars.length - planets} moons · ${constellations.length} constellations`;
 
-  const source = toGss({ stars, constellations, universe, born: new Set(bornAt.keys()) });
+  const { source, leaves } = toGss({ stars, constellations, universe, born: new Set(bornAt.keys()) });
   if (source === lastSource) return;
   lastSource = source;
-  if (scene) scene.update(source);
-  else scene = mount(canvas, source);
+  const compiled = tagCursors(compile(source), leaves);
+  if (scene) scene.update(compiled);
+  else scene = mount(canvas, compiled);
 }
 
 let timer = null;
@@ -76,4 +78,5 @@ async function loop() {
 window.addEventListener('universe:refresh', loop);
 
 initPanel(API);
+initInspector(canvas, import.meta.env.VITE_STRAPI_URL ?? 'http://localhost:1337');
 loop();

@@ -30,7 +30,9 @@ const angleOf = (doc) => {
 
 export function toGss({ stars, constellations = [], universe, born = new Set() }) {
   const sky = Math.max(1, ...stars.map((s) => Math.hypot(n(s.x), n(s.z))));
-  const widest = Math.max(1, ...stars.flatMap((s) => s.planets.map((p) => n(p.orbit, 1))));
+  // Never smaller than the Big Bang panel's max orbit (14): a new outer planet
+  // must not shrink the whole system when it is born.
+  const widest = Math.max(14, ...stars.flatMap((s) => s.planets.map((p) => n(p.orbit, 1))));
   const kSky = SKY_RADIUS / sky;
   const kOrbit = SYSTEM_RADIUS / widest;
 
@@ -39,6 +41,14 @@ export function toGss({ stars, constellations = [], universe, born = new Set() }
   const rules = [];
   const bornClass = (doc) => (born.has(doc.documentId) ? '.born' : '');
 
+  // GSS numbers every shape (not groups) from 1, in scene order. leaves[id]
+  // keeps the Strapi entry behind each shape, for the hover inspector.
+  const leaves = [null];
+  const leaf = (line, entry = null) => {
+    tree.push(line);
+    leaves.push(entry);
+  };
+
   for (const star of stars) {
     const sid = uid('s', star);
     const x = n(star.x) * kSky;
@@ -46,10 +56,10 @@ export function toGss({ stars, constellations = [], universe, born = new Set() }
     pos.set(star.documentId, [x, z]);
     const color = hex(star.color, '#ffcc66');
 
-    tree.push(`  sphere.star${bornClass(star)}#${sid};`);
+    leaf(`  sphere.star${bornClass(star)}#${sid};`, { uid: 'api::star.star', doc: star });
     rules.push(
       `#${sid} { translate: ${f(x)} 0 ${f(z)}; radius: ${f(n(star.radius, 1) * 0.45)}; ` +
-      `color: ${color}; material: emissive(${color}, 0.8); }`
+        `color: ${color}; material: emissive(${color}, 0.8); }`
     );
 
     for (const planet of star.planets) {
@@ -65,7 +75,7 @@ export function toGss({ stars, constellations = [], universe, born = new Set() }
       const moons = planet.moons ?? [];
 
       tree.push(`  group.orbit#${oid} {`);
-      tree.push(`    sphere.planet${bornClass(planet)}#${pid};`);
+      leaf(`    sphere.planet${bornClass(planet)}#${pid};`, { uid: 'api::planet.planet', doc: planet, star });
       rules.push(
         `#${oid} { translate: ${f(x)} 0 ${f(z)}; animation: orbit ${f(Math.max(2, n(planet.speed, 10)))}s linear infinite; }`,
         `#${pid} { translate: ${f(px)} 0 ${f(pz)}; radius: ${f(r)}; color: ${color}; material: ${material}; }`
@@ -73,7 +83,7 @@ export function toGss({ stars, constellations = [], universe, born = new Set() }
 
       if (planet.rings) {
         const rid = uid('r', planet);
-        tree.push(`    torus.ring#${rid};`);
+        leaf(`    torus.ring#${rid};`, { uid: 'api::planet.planet', doc: planet, star });
         rules.push(`#${rid} { translate: ${f(px)} 0 ${f(pz)}; rotate-x: 12deg; radius: ${f(r * 1.9)}; thickness: ${f(r * 0.08)}; color: ${color}; }`);
       }
 
@@ -85,10 +95,10 @@ export function toGss({ stars, constellations = [], universe, born = new Set() }
           const id = uid('mo', moon);
           const ma = (i / moons.length) * Math.PI * 2;
           const md = r * 2.2 + i * 0.08;
-          tree.push(`      sphere.moon${bornClass(moon)}#${id};`);
+          leaf(`      sphere.moon${bornClass(moon)}#${id};`, { uid: 'api::moon.moon', doc: moon, planet });
           rules.push(
             `#${id} { translate: ${f(Math.cos(ma) * md)} 0 ${f(Math.sin(ma) * md)}; ` +
-            `radius: ${f(Math.max(0.03, n(moon.radius, 0.06) * 0.6))}; color: ${hex(moon.color, '#dddddd')}; }`
+              `radius: ${f(Math.max(0.03, n(moon.radius, 0.06) * 0.6))}; color: ${hex(moon.color, '#dddddd')}; }`
           );
         });
         tree.push(`    }`);
@@ -112,7 +122,7 @@ export function toGss({ stars, constellations = [], universe, born = new Set() }
       const id = `b-${beam++}`;
       const len = Math.hypot(x2 - x1, z2 - z1);
       const yaw = (-Math.atan2(z2 - z1, x2 - x1) * 180) / Math.PI;
-      tree.push(`  cylinder.beam#${id};`);
+      leaf(`  cylinder.beam#${id};`, { uid: 'api::constellation.constellation', doc: c });
       rules.push(
         `#${id} { translate: ${f((x1 + x2) / 2)} 0 ${f((z1 + z2) / 2)}; height: ${f(len)}; rotate-y: ${f(yaw)}deg; rotate-z: 90deg; }`
       );
@@ -123,7 +133,7 @@ export function toGss({ stars, constellations = [], universe, born = new Set() }
   const glow = hex(universe?.glow, '#4945ff');
   const spin = n(universe?.spin, 0.2);
 
-  return `@scene {
+  const source = `@scene {
 ${tree.join('\n')}
 }
 
@@ -140,6 +150,7 @@ scene {
 .planet, .moon { material: matte(); }
 .beam { radius: 0.015; color: ${glow}; material: emissive(${glow}, 1.5); }
 .ring { material: metal(0.3); }
+.star, .planet, .moon, .ring, .beam { cursor: pointer; }
 
 ${rules.join('\n')}
 
@@ -157,4 +168,6 @@ ${rules.join('\n')}
   100% { scale: 1; }
 }
 `;
+
+  return { source, leaves };
 }

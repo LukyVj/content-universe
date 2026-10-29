@@ -236,3 +236,94 @@ canvas {
     animation: none;
   }
 }
+
+/* Hover inspector */
+#inspector {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 300px;
+  max-height: 60vh;
+  overflow: hidden;
+  pointer-events: none;
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 16px;
+  box-sizing: border-box;
+  background: #0d0d22e6;
+  backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid #ffffff1f;
+  box-shadow:
+    0 24px 60px #000b,
+    inset 0 1px #ffffff1a;
+  transition: translate 0.12s cubic-bezier(0.2, 0.8, 0.3, 1);
+  animation: inspector-in 0.25s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+#inspector[hidden] {
+  display: none;
+}
+@keyframes inspector-in {
+  from {
+    opacity: 0;
+    scale: 0.94;
+  }
+}
+#inspector header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#inspector .badge {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #4945ff;
+  color: #fff;
+}
+#inspector .uid {
+  font-size: 11px;
+  opacity: 0.55;
+}
+#inspector pre {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+#inspector .k {
+  color: #9b98ff;
+}
+#inspector .s {
+  color: #7fe0b5;
+}
+#inspector .n {
+  color: #ffb86b;
+}
+#inspector .l {
+  color: #ff7ab6;
+}
+#inspector i {
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-right: 4px;
+  border-radius: 3px;
+  background: var(--c);
+  vertical-align: -1px;
+  box-shadow: 0 0 0 1px #ffffff33;
+}
+#inspector footer {
+  font-size: 11px;
+  opacity: 0.55;
+}
+@media (prefers-reduced-motion: reduce) {
+  #inspector {
+    animation: none;
+    transition: none;
+  }
+}
